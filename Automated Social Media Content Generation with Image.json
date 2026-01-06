@@ -1,0 +1,361 @@
+{
+  "name": "Automated Social Media Content Generation with Image",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=summarize this article {{ $json.newslink }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        224,
+        0
+      ],
+      "id": "15e7f783-cf28-4661-a596-eaa6b69579c8",
+      "name": "Summarize Article"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Assume the role of an Industry expert and create a ready-to-post LinkedIn content discussing key points from the provided news article relevant to artificial intelligence. The post should provide insightful analysis, connect with current industry trends, and encourage professional engagement. Highlight notable implications for the industry and include a professional call to action.\nMake the post informative, structured, under 3000 characters, and ready to copy-paste directly to LinkedIn without any modifications.\nArticle summary: {{ $json.text }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        576,
+        0
+      ],
+      "id": "53ea9a7f-e32c-468f-a4c0-a24bde56153b",
+      "name": "Create LinkedIn Post"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a concise image prompt (max 50 words) for a LinkedIn post visual based on this AI article summary. Focus on modern, professional imagery with technology/business themes. Use clear descriptive terms suitable for AI image generation. {{ $json.text }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        928,
+        0
+      ],
+      "id": "3c1d6a87-e0df-4f0a-82ba-c81ed845e586",
+      "name": "Generate Image Prompt"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.generated[0] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1952,
+        0
+      ],
+      "id": "9076a9c7-ad50-497a-bdd9-938ac23f8aa8",
+      "name": "Download Image"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Juj01OehvkXx32NsjHgK0EJ-aCQanlhNUr9y2CkcGxw",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Juj01OehvkXx32NsjHgK0EJ-aCQanlhNUr9y2CkcGxw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Juj01OehvkXx32NsjHgK0EJ-aCQanlhNUr9y2CkcGxw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "290bd0c7-7141-4ead-9ff1-7b95419607c5",
+      "name": "Google Sheets Trigger1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        224
+      ],
+      "id": "6c328614-53e7-4dbd-8097-02a866555290",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        224
+      ],
+      "id": "6dd98dd7-8780-41b8-9ae8-7a9bd044e082",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        224
+      ],
+      "id": "94d0f8ab-b3bd-4b5d-a054-525e00aece3d",
+      "name": "Google Gemini Chat Model2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.freepik.com/v1/ai/mystic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-freepik-api-key",
+              "value": "FPSX8eb97ee68242a220dd74be5ada6fdafd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1280,
+        0
+      ],
+      "id": "4d80e705-534a-4912-a340-6718663608aa",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        0
+      ],
+      "id": "a6fbf9a3-b5cf-4d94-97aa-0ec5878b9470",
+      "name": "Wait for Image",
+      "webhookId": "2f97189c-8f36-4aff-b311-19cf3890e106"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.freepik.com/v1/ai/mystic/{{ $json.data.task_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-freepik-api-key",
+              "value": "FPSX8eb97ee68242a220dd74be5ada6fdafd"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        0
+      ],
+      "id": "147f39fc-1bbe-4895-a880-498a7477c430",
+      "name": "Check Status"
+    },
+    {
+      "parameters": {
+        "person": "TisHqyA1Af",
+        "text": "={{ $('Create LinkedIn Post').item.json.text }}\n",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {
+          "visibility": "PUBLIC"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        0
+      ],
+      "id": "df59de10-a801-44ef-853e-080b1e39a6cf",
+      "name": "Post to LinkedIn"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Summarize Article": {
+      "main": [
+        [
+          {
+            "node": "Create LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "Generate Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Summarize Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize Article",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create LinkedIn Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait for Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Image": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Post to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "meta": {
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "tags": []
+}
